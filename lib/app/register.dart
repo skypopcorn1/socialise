@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socialise/app/login.dart';
 import 'package:socialise/app/user_agreement.dart';
 
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'package:socialise/utilities/auth_functions.dart';
@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool showSpinner = false;
   String errorMessageText = '';
 
-//  final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
         title: Padding(
             padding: EdgeInsets.all(5.0),
             child: Image.asset(
-              'assets/images/cockatoo.png',
+              'assets/images/socialise.png',
               width: 50.0,
             )),
       ),
@@ -69,19 +69,19 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.all(18.0),
             child: GestureDetector(
               onTap: () async {
-                setState(() {
-                  showSpinner = true;
-                });
-                try {
-                  signInWithGoogle(_goToNext).whenComplete(() {
-                    showSpinner = false;
-                  });
-                } catch (e) {
-                  setState(() {
-                    showSpinner = false;
-                    errorMessageText = errorMessage(e.code);
-                  });
-                }
+//                setState(() {
+//                  showSpinner = true;
+//                });
+//                try {
+//                  signInWithGoogle(_goToNext).whenComplete(() {
+//                    showSpinner = false;
+//                  });
+//                } catch (e) {
+//                  setState(() {
+//                    showSpinner = false;
+//                    errorMessageText = errorMessage(e.code);
+//                  });
+//                }
               },
               child: Image.asset(
                 'assets/images/google_signin.png',
@@ -171,13 +171,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       showSpinner = true;
                     });
                     try {
-//                      final registeredUser =
-//                          await _auth.createUserWithEmailAndPassword(
-//                              email: email, password: password);
-//                      if (registeredUser != null) {
-//                        profileCheck(registeredUser.user.email, _goToNext);
-//                        showSpinner = false;
-//                      }
+                      final registeredUser =
+                          await _auth.createUserWithEmailAndPassword(
+                              email: email, password: password);
+                      if (registeredUser != null) {
+                        profileCheck(registeredUser.user.email, _goToNext);
+                        showSpinner = false;
+                      }
                     } catch (e) {
                       setState(() {
                         showSpinner = false;

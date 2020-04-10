@@ -19,7 +19,7 @@ class ChatRoomTile extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Text(
-                  'Sharod\'s Room',
+                  'Jeremiah\'s Room',
                   style: kH3Bold,
                 ),
               ),
@@ -49,7 +49,7 @@ class ChatRoomTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                     side: BorderSide(color: kBlue),
                   ),
-                  child: Text('Join Call'),
+                  child: Text('Join'),
                   onPressed: () {
                     Navigator.push(
                       context,

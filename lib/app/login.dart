@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     print('in login build');
     return Scaffold(
       body: Container(
-        color: Colors.blueGrey[800],
+        color: kBlue,
         child: ListView(
           children: <Widget>[
             Padding(
@@ -101,19 +101,19 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(vertical: 18.0),
               child: GestureDetector(
                 onTap: () async {
-                  setState(() {
-                    showSpinner = true;
-                  });
-                  try {
-                    signInWithGoogle(_goToNext).whenComplete(() {
-                      showSpinner = false;
-                    });
-                  } catch (e) {
-                    setState(() {
-                      showSpinner = false;
-                      errorMessageText = errorMessage(e.code);
-                    });
-                  }
+//                  setState(() {
+//                    showSpinner = true;
+//                  });
+//                  try {
+//                    signInWithGoogle(_goToNext).whenComplete(() {
+//                      showSpinner = false;
+//                    });
+//                  } catch (e) {
+//                    setState(() {
+//                      showSpinner = false;
+//                      errorMessageText = errorMessage(e.code);
+//                    });
+//                  }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

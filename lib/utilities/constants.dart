@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-const Color kBlue = Colors.blueAccent;
+const Color kBlue = MaterialColor(0xFF102136, {
+  50: Color(0xFF102138),
+  100: Color(0xFF102138),
+  200: Color(0xFF102138),
+  300: Color(0xFF102138),
+  400: Color(0xFF102138),
+  500: Color(0xFF102138),
+  600: Color(0xFF102138),
+  700: Color(0xFF102138),
+  800: Color(0xFF102138),
+  900: Color(0xFF102138),
+});
 
 Color kGrey = Colors.blueGrey[800];
 Color kLightGrey = Colors.blueGrey[500];
