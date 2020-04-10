@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:socialise/app/lobby.dart';
 import 'package:socialise/app/login.dart';
-import 'package:socialise/app/template_do_not_edit.dart';
 
 import 'package:socialise/utilities/constants.dart';
 
