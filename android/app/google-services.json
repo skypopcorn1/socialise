@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "247592713198",
+    "firebase_url": "https://socialise-8aecd.firebaseio.com",
+    "project_id": "socialise-8aecd",
+    "storage_bucket": "socialise-8aecd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247592713198:android:a2be841ce5464f36422cff",
+        "android_client_info": {
+          "package_name": "com.skypopcorn.socialise"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247592713198-gfjnn0gt8oidq4gtdinq4f59e7hm2a4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5QtHtosAF9g34k1DbSHCmNfpbBaUGSLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247592713198-gfjnn0gt8oidq4gtdinq4f59e7hm2a4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
