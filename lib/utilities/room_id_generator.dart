@@ -34,8 +34,6 @@ Future<String> generateRoomCode() async {
   }
 }
 
-Future<String> checkForCode({code}) async {}
-
 const Map alphabet = {
   0: 'A',
   1: 'B',
