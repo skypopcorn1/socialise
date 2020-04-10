@@ -3,7 +3,7 @@ import 'package:socialise/utilities/auth_functions.dart';
 import 'package:socialise/utilities/constants.dart';
 import 'package:socialise/utilities/error_msg_handling.dart';
 
-import 'package:socialise/app/home.dart';
+import 'package:socialise/app/lobby.dart';
 import 'package:socialise/app/register.dart';
 
 //import 'package:firebase_auth/firebase_auth.dart';
@@ -270,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
   void _goToNext(type) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => LobbyPage()),
 //      MaterialPageRoute(builder: (context) => TestPage()),
     );
   }

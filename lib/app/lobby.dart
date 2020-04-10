@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'package:socialise/components/chat_room_tile.dart';
+import 'package:socialise/app/create_room.dart';
 
 import 'package:socialise/utilities/constants.dart';
 
-class HomePage extends StatefulWidget {
+class LobbyPage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _LobbyPageState createState() => _LobbyPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     double outerMargin = MediaQuery.of(context).size.width * 0.025;
@@ -27,21 +28,30 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 18.0),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.add_circle,
-                          color: Colors.blueGrey[900],
-                          size: 45,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Create a Room',
-                            style: kH2Dark,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateRoomPage()),
+                        );
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.add_circle,
+                            color: kBlue,
+                            size: 45,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Create a Room',
+                              style: kH2Dark,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   ChatRoomTile(

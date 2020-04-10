@@ -1,12 +1,13 @@
-import 'dart:async';
-import 'dart:core';
+//import 'dart:async';
+//import 'dart:core';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:socialise/components/school_of_life_bloc.dart';
 
 import 'package:socialise/utilities/constants.dart';
 
-import 'package:flutter_webrtc/webrtc.dart';
+//import 'package:flutter_webrtc/webrtc.dart';
 
 class ChatRoomPage extends StatefulWidget {
   @override
@@ -133,11 +134,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 //    });
 //  }
 
-//  @override
-//  initState() {
-//    super.initState();
-//    initRenderers();
-//  }
 //
 //  @override
 //  deactivate() {
@@ -150,148 +146,138 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 //  }
 
   bool testing = true;
+  List _questionSet;
+  Widget _questionListView = Container(); //initialise with an empty container
 
-  randomKey(Map map) => map.keys.elementAt(new Random().nextInt(map.length));
+  void updateQuestionList(questionSet) {
+    setState(() {
+      print('callback questionSet: $questionSet');
+      _questionListView = QuestionListView(questionSet: questionSet);
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    getQuestionSet(callback: updateQuestionList);
+//    initRenderers();
+  }
 
   @override
   Widget build(BuildContext context) {
     double _smallVideoHeight = MediaQuery.of(context).size.height * 0.25;
     double _smallVideoWidth = MediaQuery.of(context).size.width * 0.5;
-    double _questionWidth = MediaQuery.of(context).size.width * 0.95;
+    double _outermargin = MediaQuery.of(context).size.width * 0.025;
 
     return Scaffold(
       appBar: AppBar(),
       body: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                child: testing
-                    ? Icon(Icons.videocam_off, color: Colors.white, size: 40)
-                    : Container(),
+          Expanded(
+            flex: 2,
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        child: testing
+                            ? Icon(Icons.videocam_off,
+                                color: Colors.white, size: 40)
+                            : Container(),
 //                    : new RTCVideoView(_localRenderer),
-                height: _smallVideoHeight,
-                width: _smallVideoWidth,
-                decoration: new BoxDecoration(color: Colors.lightBlue),
-              ),
-              Container(
-                child: testing
-                    ? Icon(Icons.videocam_off, color: Colors.white, size: 40)
-                    : Container(),
+                        height: _smallVideoHeight,
+                        width: _smallVideoWidth,
+                        decoration: new BoxDecoration(color: Colors.lightBlue),
+                      ),
+                      Container(
+                        child: testing
+                            ? Icon(Icons.videocam_off,
+                                color: Colors.white, size: 40)
+                            : Container(),
 //                    : new RTCVideoView(_remoteRenderer),
-                height: _smallVideoHeight,
-                width: _smallVideoWidth,
-                decoration: new BoxDecoration(
-                  color: Colors.lightBlue,
-                  border: Border.all(color: Colors.black38),
-                ),
+                        height: _smallVideoHeight,
+                        width: _smallVideoWidth,
+                        decoration: new BoxDecoration(
+                          color: Colors.lightBlue,
+                          border: Border.all(color: Colors.black38),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-          Column(
-            children: <Widget>[
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(18.0),
-                      child: Text('School of Life', style: kH3Bold),
+          Expanded(
+            flex: 5,
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      child: Center(
+                          child: Text('Select a minimum of 4 questions',
+                              style: kP1LightGrey)),
                     ),
-                    FutureBuilder(
-                      future: _firestore
-                          .collection('activities')
-                          .document('UhO80iQ21olNUw5TCHzn')
-                          .collection('questions')
-                          .getDocuments(),
-                      builder: (context, snapshot) {
-                        List<Widget> _questions = [];
-
-                        if (!snapshot.hasData) {
-                          _questions.add(Container(
-                            height: 50,
-                            width: 50,
-                            child: CircularProgressIndicator(),
-                          ));
-                        } else {
-                          Map _queryResults = {
-                            'easy': [],
-                            'medium': [],
-                            'hard': [],
-                          };
-                          for (var question in snapshot.data.documents) {
-                            _queryResults[question.data['type']]
-                                .add(question.data['topic']);
-                          }
-
-                          List _roundQuestions = [];
-                          for (int i = 0; i < 4; i++) {
-                            print(
-                                'random q: ${_queryResults['easy'][Random().nextInt(_queryResults['easy'].length)]}');
-
-                            _roundQuestions.add([
-                              _queryResults['easy'][Random()
-                                  .nextInt(_queryResults['easy'].length)],
-                              true
-                            ]);
-                          }
-                          _roundQuestions.add([
-                            _queryResults['medium'][Random()
-                                .nextInt(_queryResults['medium'].length)],
-                            true
-                          ]);
-
-                          //add questions to the list and set all to true (selected).
-                          _roundQuestions.add([
-                            _queryResults['hard'][
-                                Random().nextInt(_queryResults['hard'].length)],
-                            true
-                          ]);
-
-                          for (int i = 0; i < _roundQuestions.length; i++) {
-                            _questions.add(GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _roundQuestions[i][1]
-                                      ? _roundQuestions[i][1] = false
-                                      : _roundQuestions[i][1] = true;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black54,
-                                      offset: Offset(4, 4),
-                                      blurRadius: 2,
-                                    )
-                                  ],
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color: _roundQuestions[i][1]
-                                      ? Colors.greenAccent
-                                      : Colors.purpleAccent,
-                                ),
-                                margin: EdgeInsets.all(18.0),
-                                width: _questionWidth,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: Text(_roundQuestions[i][0]),
-                                ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: _outermargin),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
                               ),
-                            ));
-                          }
-                        }
-
-                        return Container(
-                            height: _smallVideoHeight * 2,
-                            width: _questionWidth,
-                            child: ListView(children: _questions));
-                      },
+                              height: 20.0,
+                              child: RaisedButton(
+                                child: Text(
+                                  'Done',
+                                ),
+                                color: Colors.blueAccent,
+                                elevation: 5,
+                                onPressed: () {
+                                  setState(() {
+                                    //TODO make this pull in the correct name.
+                                    _questionListView =
+                                        Text('Waiting on Jeremiah');
+                                  });
+                                },
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                textColor: Colors.white,
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.greenAccent,
+                                  size: 25,
+                                ),
+                                Text(' 6 Selected'),
+                              ],
+                            ),
+                            //TODO update based on selected question count.
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    flex: 9,
+                    child: Container(child: _questionListView),
+                  ),
+                ],
               ),
-            ],
+            ),
           )
         ],
       ),

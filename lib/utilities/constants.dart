@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-const Color kBlue = MaterialColor(0xFF102136, {
-  50: Color(0xFF102138),
-  100: Color(0xFF102138),
-  200: Color(0xFF102138),
-  300: Color(0xFF102138),
-  400: Color(0xFF102138),
-  500: Color(0xFF102138),
-  600: Color(0xFF102138),
-  700: Color(0xFF102138),
-  800: Color(0xFF102138),
-  900: Color(0xFF102138),
+const Color kBlue = MaterialColor(0xFF2D9CDB, {
+  50: Color(0xFF2D9CDB),
+  100: Color(0xFF2D9CDB),
+  200: Color(0xFF2D9CDB),
+  300: Color(0xFF2D9CDB),
+  400: Color(0xFF2D9CDB),
+  500: Color(0xFF2D9CDB),
+  600: Color(0xFF2D9CDB),
+  700: Color(0xFF2D9CDB),
+  800: Color(0xFF2D9CDB),
+  900: Color(0xFF2D9CDB),
 });
 
 Color kGrey = Colors.blueGrey[800];
-Color kLightGrey = Colors.blueGrey[500];
+Color kLightGrey = Colors.blueGrey[900];
 Color kLinkGreen = Colors.lightGreenAccent;
 
 const TextStyle kErrorMessage = TextStyle(
@@ -99,7 +99,7 @@ TextStyle kP1 = TextStyle(
 );
 
 TextStyle kP1LightGrey = TextStyle(
-  color: Colors.grey[400],
+  color: Colors.black54,
   fontSize: 16.0,
 );
 

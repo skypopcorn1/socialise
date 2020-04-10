@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:socialise/app/home.dart';
+import 'package:socialise/app/lobby.dart';
 
 import 'package:socialise/utilities/auth_functions.dart';
 import 'package:socialise/utilities/constants.dart';
@@ -68,7 +68,7 @@ class _UserAgreementPageState extends State<UserAgreementPage> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomePage(),
+                          builder: (context) => LobbyPage(),
                         ),
                         ModalRoute.withName('/'),
                       );

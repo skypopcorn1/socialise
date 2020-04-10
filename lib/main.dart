@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:socialise/app/home.dart';
+import 'package:socialise/app/lobby.dart';
 import 'package:socialise/app/login.dart';
+import 'package:socialise/app/template_do_not_edit.dart';
 
 import 'package:socialise/utilities/constants.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: kBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: LobbyPage(),
     );
   }
 }
