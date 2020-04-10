@@ -66,6 +66,11 @@ TextStyle kH3 = TextStyle(
   fontSize: 20.0,
 );
 
+TextStyle kH3White = TextStyle(
+  color: Colors.white,
+  fontSize: 20.0,
+);
+
 TextStyle kH3Bold = TextStyle(
   color: kGrey,
   fontSize: 20.0,
@@ -74,6 +79,11 @@ TextStyle kH3Bold = TextStyle(
 
 TextStyle kH4 = TextStyle(
   color: kGrey,
+  fontSize: 18.0,
+);
+
+TextStyle kH4White = TextStyle(
+  color: Colors.white,
   fontSize: 18.0,
 );
 
