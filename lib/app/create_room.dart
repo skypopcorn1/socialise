@@ -3,6 +3,8 @@ import 'package:socialise/utilities/constants.dart';
 import 'package:socialise/utilities/room_id_generator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'RoomConfirmation.dart';
+
 class CreateRoomPage extends StatefulWidget {
   @override
   _CreateRoomPageState createState() => _CreateRoomPageState();
@@ -231,6 +233,12 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                         'private': roomDetails['private'],
                         'code': code,
                       }).then((result) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  RoomConfirmation(roomId: code)),
+                        );
                         print('result: ${result.documentID}');
                       });
                     });
