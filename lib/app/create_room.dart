@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:socialise/utilities/constants.dart';
+import 'package:socialise/utilities/room_id_generator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateRoomPage extends StatefulWidget {
@@ -22,12 +23,14 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
           'activity': 'dating',
           'participants': 3,
           'private': false,
+          'code': 'no change',
         }
       : {
           'room': null,
           'activity': null,
           'participants': null,
           'private': false,
+          'code': null,
         };
 
   @override
@@ -220,13 +223,16 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                   });
                   if (_errors.isEmpty) {
                     //submit data to database
-                    _firestore.collection('rooms').add({
-                      'room': roomDetails['room'],
-                      'activity': roomDetails['activity'],
-                      'participants': roomDetails['participants'],
-                      'private': roomDetails['private'],
-                    }).then((result) {
-                      print('result: ${result.documentID}');
+                    generateRoomCode().then((code) {
+                      _firestore.collection('rooms').add({
+                        'room': roomDetails['room'],
+                        'activity': roomDetails['activity'],
+                        'participants': roomDetails['participants'],
+                        'private': roomDetails['private'],
+                        'code': code,
+                      }).then((result) {
+                        print('result: ${result.documentID}');
+                      });
                     });
                   }
                 },
