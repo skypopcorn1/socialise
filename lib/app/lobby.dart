@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:socialise/components/chat_room_tile.dart';
@@ -5,6 +6,8 @@ import 'package:socialise/app/create_room.dart';
 import 'package:socialise/app/test_room.dart';
 
 import 'package:socialise/utilities/constants.dart';
+
+final Firestore _firestore = Firestore.instance;
 
 class LobbyPage extends StatefulWidget {
   @override
@@ -51,7 +54,8 @@ class _LobbyPageState extends State<LobbyPage>
         body: ListView(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(outerMargin),
+              padding: EdgeInsets.only(
+                  top: outerMargin * 2, left: outerMargin, bottom: outerMargin),
               child: Text(
                 'Lobby',
                 style: kH1Dark,
@@ -62,50 +66,51 @@ class _LobbyPageState extends State<LobbyPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 18.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CreateRoomPage()),
-                        );
-                      },
-                      child: Container(
-                        height: 40,
-                        width: outerMargin * 20,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          color: Colors.green[400],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 30,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateRoomPage()),
+                      );
+                    },
+                    child: Container(
+                      height: 40,
+                      width: outerMargin * 20,
+                      margin: EdgeInsets.all(outerMargin),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: Colors.green[400],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Create Room',
+                              style: kP1White,
                             ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Create Room',
-                                style: kP1White,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    padding: EdgeInsets.symmetric(
+                        vertical: outerMargin * 2, horizontal: outerMargin),
                     child: Row(
                       children: <Widget>[
                         Expanded(
                           flex: 1,
                           child: Container(
+                            height: 40,
+                            width: outerMargin * 20,
                             child: TextFormField(
                               textAlign: TextAlign.center,
                               onFieldSubmitted: (value) {},
@@ -113,13 +118,13 @@ class _LobbyPageState extends State<LobbyPage>
                                 _roomId = value;
                                 print('roomId: $_roomId');
                               },
-                              style: kH3,
+                              style: kH4,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(30)),
                                 fillColor: Colors.white,
                                 filled: true,
-                                labelText: 'Enter a room code',
+                                labelText: 'Enter room id',
                               ),
                             ),
                           ),
@@ -148,7 +153,7 @@ class _LobbyPageState extends State<LobbyPage>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     Icon(
-                                      Icons.add,
+                                      Icons.videocam,
                                       color: Colors.white,
                                       size: 30,
                                     ),
@@ -179,28 +184,27 @@ class _LobbyPageState extends State<LobbyPage>
                             indicatorSize: TabBarIndicatorSize.tab,
                             indicatorWeight: 6,
                             tabs: myTabs),
-                        margin: EdgeInsets.all(outerMargin),
+                        margin: EdgeInsets.symmetric(horizontal: outerMargin),
                       ),
                       Container(
-                        height: tileHeight / 3,
+                        height: tileHeight * 2,
                         child: TabBarView(
                           controller: _tabController,
-                          children: myTabs.map((Tab tab) {
-                            final String label = tab.text.toLowerCase();
-                            return Center(
-                              child: Text(
-                                '$label',
-                                style: kH3Bold,
-                              ),
-                            );
-                          }).toList(),
+                          children: <Widget>[
+                            ChatRoomListView(
+                              tileHeight: tileHeight,
+                              tileWidth: tileWidth,
+                              public: false,
+                            ),
+                            ChatRoomListView(
+                              tileHeight: tileHeight,
+                              tileWidth: tileWidth,
+                              public: true,
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                  ChatRoomTile(
-                    tileHeight: tileHeight,
-                    tileWidth: tileWidth,
                   ),
                 ],
               ),
@@ -210,28 +214,11 @@ class _LobbyPageState extends State<LobbyPage>
   }
 }
 
-Widget _getPage(Tab tab) {
+Widget _getPage(Tab tab, double width, double height) {
   switch (tab.text) {
     case 'Private':
-      return Text('Private');
+      return Text('Private Rooms');
     case 'Public':
-      return Text('Public');
-  }
-}
-
-class DecoratedTabBar extends StatelessWidget {
-  DecoratedTabBar({@required this.tabBar, @required this.decoration});
-
-  final TabBarView tabBar;
-  final BoxDecoration decoration;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        tabBar,
-        Positioned.fill(child: Container(decoration: decoration)),
-      ],
-    );
+      return Text('Public Rooms');
   }
 }
