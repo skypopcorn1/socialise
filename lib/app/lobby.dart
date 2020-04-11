@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:socialise/components/chat_room_tile.dart';
@@ -8,6 +9,7 @@ import 'package:socialise/app/test_room.dart';
 import 'package:socialise/utilities/constants.dart';
 
 final Firestore _firestore = Firestore.instance;
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LobbyPage extends StatefulWidget {
   @override
@@ -17,6 +19,7 @@ class LobbyPage extends StatefulWidget {
 class _LobbyPageState extends State<LobbyPage>
     with SingleTickerProviderStateMixin {
   String _roomId;
+  var user;
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Private'),
     Tab(text: 'Public'),
@@ -24,8 +27,16 @@ class _LobbyPageState extends State<LobbyPage>
 
   TabController _tabController;
 
+  void getUser() async {
+    final _user = await _auth.currentUser();
+    setState(() {
+      user = _user;
+    });
+  }
+
   @override
   void initState() {
+    user = _auth.currentUser();
     print('tablist.length: ${myTabs.length}');
     _tabController = TabController(
       vsync: this,

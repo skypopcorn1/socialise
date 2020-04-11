@@ -1,11 +1,12 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:socialise/utilities/constants.dart';
 
 final Firestore _firestore = Firestore.instance;
 
-Future<List> setRoomQuestions() async {
+Future<List> setRoomQuestions({callback}) async {
   List _questionSet = [];
   Map _queryResults = {
     'easy': [],
@@ -20,7 +21,7 @@ Future<List> setRoomQuestions() async {
       .getDocuments();
 
   if (_fullQuestionSet.documents.isEmpty) {
-    return [];
+    return callback([]);
   } else {
     for (var question in _fullQuestionSet.documents) {
       _queryResults[question.data['type']].add(
@@ -50,29 +51,41 @@ Future<List> setRoomQuestions() async {
       true
     ]);
 
-    return _questionSet;
+    return callback(_questionSet);
   }
 }
 
 class QuestionListView extends StatefulWidget {
-  QuestionListView({this.questionSet});
+  QuestionListView({this.room, this.user});
 
-  final List questionSet;
+  final DocumentSnapshot room;
+  final Future<FirebaseUser> user;
 
   @override
   _QuestionListViewState createState() => _QuestionListViewState();
 }
 
 class _QuestionListViewState extends State<QuestionListView> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool done = false;
   List _questionSet;
   Map _questionSelected = {};
   int questionCount;
   bool questionCountError = false;
+  var user;
+  String userID;
+  void getUser() async {
+    final _user = await _auth.currentUser();
+    setState(() {
+      userID = _user.uid;
+    });
+  }
 
   @override
   void initState() {
-    _questionSet = widget.questionSet;
-    questionCount = widget.questionSet.length;
+    getUser();
+    _questionSet = widget.room.data['questions'];
+    questionCount = _questionSet.length;
 
     for (int i = 0; i < _questionSet.length; i++) {
       _questionSelected[_questionSet[i]] = false;
@@ -122,8 +135,20 @@ class _QuestionListViewState extends State<QuestionListView> {
                                 color: Colors.blueAccent,
                                 elevation: 5,
                                 onPressed: () {
-                                  setState(() {
-                                    //TODO make this pull in the correct name.
+                                  List _finalSelections = [];
+                                  _questionSelected.forEach((key, value) {
+                                    if (!_questionSelected[key]) {
+                                      _finalSelections.add(key);
+                                    }
+                                    _firestore
+                                        .collection('rooms')
+                                        .document(widget.room.documentID)
+                                        .updateData({
+                                      '$userID\_questions': _finalSelections,
+                                    });
+                                    setState(() {
+                                      done = true;
+                                    });
                                   });
                                 },
                                 shape: RoundedRectangleBorder(
@@ -148,61 +173,67 @@ class _QuestionListViewState extends State<QuestionListView> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 9,
-                      child: Container(
-                        child: ListView.builder(
-                            itemCount: _questionSet.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              // question not selected by default.
+                    !done
+                        ? Expanded(
+                            flex: 9,
+                            child: Container(
+                              child: ListView.builder(
+                                  itemCount: _questionSet.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    // question not selected by default.
 
-                              return GestureDetector(
-                                onTap: () {
-                                  print('pressed');
-                                  setState(() {
-                                    if (questionCount == 4 &&
-                                        !_questionSelected[
-                                            _questionSet[index]]) {
-                                      print('problem');
-                                      questionCountError = true;
-                                    } else {
-                                      questionCountError = false;
-                                      _questionSelected[_questionSet[index]] =
-                                          !_questionSelected[
-                                              _questionSet[index]];
-                                      _questionSelected[_questionSet[index]]
-                                          ? questionCount--
-                                          : questionCount++;
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        offset: Offset(3, 3),
-                                        blurRadius: 2.0,
-                                        spreadRadius: 2.0,
-                                      )
-                                    ],
-                                    color:
-                                        _questionSelected[_questionSet[index]]
-                                            ? Colors.purple[100]
-                                            : Colors.white,
-                                  ),
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(18.0),
-                                    child: Text(_questionSet[index]),
-                                  ),
-                                ),
-                              );
-                            }),
-                      ),
-                    ),
+                                    return GestureDetector(
+                                      onTap: () {
+                                        print('pressed');
+                                        setState(() {
+                                          if (questionCount == 4 &&
+                                              !_questionSelected[
+                                                  _questionSet[index]]) {
+                                            print('problem');
+                                            questionCountError = true;
+                                          } else {
+                                            questionCountError = false;
+                                            _questionSelected[
+                                                    _questionSet[index]] =
+                                                !_questionSelected[
+                                                    _questionSet[index]];
+                                            _questionSelected[
+                                                    _questionSet[index]]
+                                                ? questionCount--
+                                                : questionCount++;
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              offset: Offset(3, 3),
+                                              blurRadius: 2.0,
+                                              spreadRadius: 2.0,
+                                            )
+                                          ],
+                                          color: _questionSelected[
+                                                  _questionSet[index]]
+                                              ? Colors.purple[100]
+                                              : Colors.white,
+                                        ),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10.0, horizontal: 10.0),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(18.0),
+                                          child: Text(_questionSet[index]),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          )
+                        : Text('Waiting on other user.'),
                   ],
                 ),
               ),

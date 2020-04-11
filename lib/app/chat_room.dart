@@ -2,6 +2,7 @@
 //import 'dart:core';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:socialise/components/school_of_life_bloc.dart';
 
@@ -12,9 +13,12 @@ import 'package:socialise/utilities/constants.dart';
 class ChatRoomPage extends StatefulWidget {
   ChatRoomPage({
     this.room,
+    this.user,
   });
 
   final DocumentSnapshot room;
+  final Future<FirebaseUser> user;
+
   @override
   _ChatRoomPageState createState() => _ChatRoomPageState();
 }
@@ -150,14 +154,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 //    _remoteRenderer.dispose();
 //  }
 
+  var user;
   bool testing = true;
   List _questionSet;
   Widget _questionListView = Container(); //initialise with an empty container
 
   @override
   initState() {
+    user = widget.user;
     print('widget.room[questions]: ${widget.room['questions']}');
-    _questionListView = QuestionListView(questionSet: widget.room['questions']);
+    _questionListView = QuestionListView(room: widget.room, user: user);
     super.initState();
 //    initRenderers();
   }
@@ -212,7 +218,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             flex: 5,
             child: Container(
               child: QuestionListView(
-                questionSet: widget.room.data['questions'],
+                room: widget.room,
               ),
             ),
           ),

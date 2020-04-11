@@ -5,6 +5,7 @@ import 'package:socialise/components/school_of_life_bloc.dart';
 import 'package:socialise/utilities/constants.dart';
 
 class ChatRoomTestPage extends StatefulWidget {
+
   @override
   _ChatRoomTestPageState createState() => _ChatRoomTestPageState();
 }
@@ -17,7 +18,7 @@ class _ChatRoomTestPageState extends State<ChatRoomTestPage> {
   void updateQuestionList(questionSet) {
     setState(() {
       print('callback questionSet: $questionSet');
-      _questionListView = QuestionListView(questionSet: questionSet);
+//      _questionListView = QuestionListView(room: widget.room);
     });
   }
 

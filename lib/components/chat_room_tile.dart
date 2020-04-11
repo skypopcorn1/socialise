@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:socialise/app/chat_room.dart';
@@ -10,7 +11,7 @@ class ChatRoomListView extends StatelessWidget {
   ChatRoomListView(
       {@required this.tileHeight,
       @required this.tileWidth,
-      @required this.public});
+      @required this.public,});
 
   final bool public;
   final double tileHeight;
@@ -47,7 +48,10 @@ class ChatRoomListView extends StatelessWidget {
 }
 
 class ChatRoomTile extends StatelessWidget {
-  ChatRoomTile({@required this.doc, this.tileHeight, this.tileWidth});
+  ChatRoomTile(
+      {@required this.doc,
+      this.tileHeight,
+      this.tileWidth});
 
   DocumentSnapshot doc;
   double tileHeight;
