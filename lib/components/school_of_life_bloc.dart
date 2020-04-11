@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialise/components/question.dart';
 import 'package:socialise/utilities/constants.dart';
 
 final Firestore _firestore = Firestore.instance;
@@ -61,6 +62,7 @@ class QuestionListView extends StatefulWidget {
 class _QuestionListViewState extends State<QuestionListView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool done = false;
+  List finalListOfQuestions;
   List _questionSet;
   Map _questionSelected = {};
   int questionCount;
@@ -82,7 +84,14 @@ class _QuestionListViewState extends State<QuestionListView> {
         .snapshots()) {
       if (snapshot.data.isNotEmpty) {
         if (snapshot.data['users_ready'] == snapshot.data['participants']) {
+          List excludedQuestions = snapshot.data['excluded_questions'];
+          List questions = snapshot.data['questions'];
+          excludedQuestions.forEach((element) {
+            questions.remove(element);
+          });
+
           setState(() {
+            finalListOfQuestions = questions;
             usersReadyToStart = true;
           });
         }
@@ -116,7 +125,7 @@ class _QuestionListViewState extends State<QuestionListView> {
             child: Container(
               child: Center(
                 child: usersReadyToStart
-                    ? Text('Users are ready to start')
+                    ? Question(questionList: finalListOfQuestions)
                     : Text('Must select a minimum of 4 questions',
                         style: questionCountError
                             ? kP1ErrorMessage
