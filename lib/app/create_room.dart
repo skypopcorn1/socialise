@@ -23,7 +23,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
   int testRoomCounter = 1;
   Map roomDetails = testing
       ? {
-          'room': 'Test Room 1',
+          'room': 'Jeremiah\'s Test Room 1',
           'activity': 'dating',
           'participants': 3,
           'public': false,
@@ -220,7 +220,8 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                 onPressed: () {
                   testRoomCounter++;
                   testing
-                      ? roomDetails['room'] = 'Test Room $testRoomCounter'
+                      ? roomDetails['room'] =
+                          'Jeremiah\'s Test Room $testRoomCounter'
                       : null;
 
                   List _errors = [];
@@ -241,14 +242,8 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                           'participants': roomDetails['participants'],
                           'public': roomDetails['public'],
                           'code': code,
-                          'questions': [
-                            'question1',
-                            'question2',
-                            'question3',
-                            'question4',
-                            'question5',
-                            'question6'
-                          ],
+                          'questions': questions,
+                          'users_ready': 0,
                         }).then((result) {
                           Navigator.push(
                             context,
@@ -256,7 +251,6 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                                 builder: (context) =>
                                     RoomConfirmation(roomId: code)),
                           );
-                          print('result: ${result.documentID}');
                         });
                       });
                     }

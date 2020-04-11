@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialise/app/chat_room.dart';
 
 import 'package:socialise/components/chat_room_tile.dart';
 import 'package:socialise/app/create_room.dart';
@@ -145,11 +146,24 @@ class _LobbyPageState extends State<LobbyPage>
                           child: Container(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatRoomTestPage()),
-                                );
+                                _firestore
+                                    .collection('rooms')
+                                    .where('code', isEqualTo: _roomId)
+                                    .getDocuments()
+                                    .then((result) {
+                                  QuerySnapshot ab;
+
+                                  print('result: ${result.documents}');
+                                  if (result.documents.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatRoomPage(
+                                                room: result.documents[0],
+                                              )),
+                                    );
+                                  }
+                                });
                               },
                               child: Container(
                                 alignment: Alignment.center,

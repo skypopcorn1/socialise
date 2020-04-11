@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialise/components/question.dart';
 import 'package:socialise/utilities/constants.dart';
 
 final Firestore _firestore = Firestore.instance;
@@ -31,25 +32,18 @@ Future<List> setRoomQuestions({callback}) async {
 
     //add easy questions to the list and set all to true (selected).
     for (int i = 0; i < 4; i++) {
-      _questionSet.add(
-        [
-          _queryResults['easy'][Random().nextInt(_queryResults['easy'].length)],
-          true
-        ],
-      );
+      _questionSet.add(_queryResults['easy']
+          [Random().nextInt(_queryResults['easy'].length)]);
     }
 
     //add medium questions to the list and set all to true (selected).
-    _questionSet.add([
-      _queryResults['medium'][Random().nextInt(_queryResults['medium'].length)],
-      true
-    ]);
+    _questionSet.add(_queryResults['medium']
+        [Random().nextInt(_queryResults['medium'].length)]);
 
     //add hard questions to the list and set all to true (selected).
-    _questionSet.add([
+    _questionSet.add(
       _queryResults['hard'][Random().nextInt(_queryResults['hard'].length)],
-      true
-    ]);
+    );
 
     return callback(_questionSet);
   }
@@ -68,12 +62,14 @@ class QuestionListView extends StatefulWidget {
 class _QuestionListViewState extends State<QuestionListView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool done = false;
+  List finalListOfQuestions;
   List _questionSet;
   Map _questionSelected = {};
   int questionCount;
   bool questionCountError = false;
   var user;
   String userID;
+  bool usersReadyToStart = false;
   void getUser() async {
     final _user = await _auth.currentUser();
     setState(() {
@@ -81,9 +77,32 @@ class _QuestionListViewState extends State<QuestionListView> {
     });
   }
 
+  void usersReady() async {
+    await for (var snapshot in _firestore
+        .collection('rooms')
+        .document(widget.room.documentID)
+        .snapshots()) {
+      if (snapshot.data.isNotEmpty) {
+        if (snapshot.data['users_ready'] == snapshot.data['participants']) {
+          List excludedQuestions = snapshot.data['excluded_questions'];
+          List questions = snapshot.data['questions'];
+          excludedQuestions.forEach((element) {
+            questions.remove(element);
+          });
+
+          setState(() {
+            finalListOfQuestions = questions;
+            usersReadyToStart = true;
+          });
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     getUser();
+    usersReady();
     _questionSet = widget.room.data['questions'];
     questionCount = _questionSet.length;
 
@@ -105,9 +124,13 @@ class _QuestionListViewState extends State<QuestionListView> {
             flex: 1,
             child: Container(
               child: Center(
-                  child: Text('Must select a minimum of 4 questions',
-                      style:
-                          questionCountError ? kP1ErrorMessage : kP1LightGrey)),
+                child: usersReadyToStart
+                    ? Question(questionList: finalListOfQuestions)
+                    : Text('Must select a minimum of 4 questions',
+                        style: questionCountError
+                            ? kP1ErrorMessage
+                            : kP1LightGrey),
+              ),
             ),
           ),
           Expanded(
@@ -119,59 +142,69 @@ class _QuestionListViewState extends State<QuestionListView> {
                   children: <Widget>[
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              height: 20.0,
-                              child: RaisedButton(
-                                child: Text(
-                                  'Done',
-                                ),
-                                color: Colors.blueAccent,
-                                elevation: 5,
-                                onPressed: () {
-                                  List _finalSelections = [];
-                                  _questionSelected.forEach((key, value) {
-                                    if (!_questionSelected[key]) {
-                                      _finalSelections.add(key);
-                                    }
-                                    _firestore
-                                        .collection('rooms')
-                                        .document(widget.room.documentID)
-                                        .updateData({
-                                      '$userID\_questions': _finalSelections,
-                                    });
-                                    setState(() {
-                                      done = true;
-                                    });
-                                  });
-                                },
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                textColor: Colors.white,
-                              ),
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.greenAccent,
-                                  size: 25,
-                                ),
-                                Text('$questionCount Selected'),
-                              ],
-                            ),
+                      child: !done
+                          ? Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    height: 20.0,
+                                    child: RaisedButton(
+                                      child: Text(
+                                        'Done',
+                                      ),
+                                      color: Colors.blueAccent,
+                                      elevation: 5,
+                                      onPressed: () {
+                                        List _excludedQuestions = [];
+                                        _questionSelected.forEach((key, value) {
+                                          if (_questionSelected[key]) {
+                                            _excludedQuestions.add(key);
+                                          }
+                                        });
+                                        _firestore
+                                            .collection('rooms')
+                                            .document(widget.room.documentID)
+                                            .updateData({
+                                          'excluded_questions':
+                                              FieldValue.arrayUnion(
+                                                  _excludedQuestions),
+                                          'users_ready':
+                                              FieldValue.increment(1),
+                                        });
+                                        setState(() {
+                                          done = true;
+                                        });
+                                      },
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      textColor: Colors.white,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.check_circle_outline,
+                                        color: Colors.greenAccent,
+                                        size: 25,
+                                      ),
+                                      Text('$questionCount Selected'),
+                                    ],
+                                  ),
 
-                            //TODO update based on selected question count.
-                          ],
-                        ),
-                      ),
+                                  //TODO update based on selected question count.
+                                ],
+                              ),
+                            )
+                          : Container(
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
                     ),
                     !done
                         ? Expanded(
@@ -233,7 +266,14 @@ class _QuestionListViewState extends State<QuestionListView> {
                                   }),
                             ),
                           )
-                        : Text('Waiting on other user.'),
+                        : Expanded(
+                            flex: 9,
+                            child: Container(
+                              child: usersReadyToStart
+                                  ? Text('Ok, get ready we\'re about to start.')
+                                  : Text('Waiting on other user.'),
+                            ),
+                          ),
                   ],
                 ),
               ),

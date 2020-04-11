@@ -1,6 +1,9 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
-import 'package:socialise/app/lobby.dart';
-import 'package:socialise/app/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:socialise/app/test_room.dart';
 
 import 'package:socialise/utilities/constants.dart';
 
@@ -8,8 +11,29 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String server = '';
+
+  SharedPreferences _prefs;
+
+  _initData() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      server = _prefs.getString('server') ?? 'webrtc.socialise.rocks';
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _initData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +42,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: kBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LobbyPage(),
+      home: LoopBackSample(),
     );
   }
 }

@@ -36,7 +36,6 @@ class _QuestionState extends State<Question> {
       oneSec,
       (Timer timer) => setState(
         () {
-          print('timeLeft $timeLeft');
           if (timeLeft < 1) {
             // Player Switching
             if (playerIndex == 1) {
