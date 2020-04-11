@@ -8,10 +8,11 @@ import 'package:socialise/utilities/constants.dart';
 final Firestore _firestore = Firestore.instance;
 
 class ChatRoomListView extends StatelessWidget {
-  ChatRoomListView(
-      {@required this.tileHeight,
-      @required this.tileWidth,
-      @required this.public,});
+  ChatRoomListView({
+    @required this.tileHeight,
+    @required this.tileWidth,
+    @required this.public,
+  });
 
   final bool public;
   final double tileHeight;
@@ -32,7 +33,6 @@ class ChatRoomListView extends StatelessWidget {
 
         List<Widget> _roomTiles = [];
         for (var doc in snapshot.data.documents) {
-          print('doc: ${doc.data}');
           _roomTiles.add(
             ChatRoomTile(
               doc: doc,
@@ -48,10 +48,7 @@ class ChatRoomListView extends StatelessWidget {
 }
 
 class ChatRoomTile extends StatelessWidget {
-  ChatRoomTile(
-      {@required this.doc,
-      this.tileHeight,
-      this.tileWidth});
+  ChatRoomTile({@required this.doc, this.tileHeight, this.tileWidth});
 
   DocumentSnapshot doc;
   double tileHeight;

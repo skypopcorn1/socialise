@@ -1,6 +1,8 @@
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
+import 'package:socialise/app/lobby.dart';
+import 'package:socialise/utilities/constants.dart';
 
 class RoomConfirmation extends StatefulWidget {
   RoomConfirmation({this.roomId});
@@ -30,10 +32,6 @@ class _RoomConfirmationState extends State<RoomConfirmation> {
             Text('  SOCIALISE'),
           ],
         ),
-        actions: <Widget>[
-          Icon(Icons.settings, color: Colors.white),
-          Icon(Icons.person, color: Colors.white)
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,6 +98,27 @@ class _RoomConfirmationState extends State<RoomConfirmation> {
                   icon: Icon(Icons.share), onPressed: () => share(_roomId)),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 18.0, vertical: 40.0),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LobbyPage()),
+                      );
+                    },
+                    child: Icon(Icons.home, color: kBlue, size: 50)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Icon(Icons.chat_bubble, color: kBlue, size: 50),
+              ),
+            ],
+          )
         ],
       ),
     );
