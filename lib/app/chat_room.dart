@@ -10,6 +10,11 @@ import 'package:socialise/utilities/constants.dart';
 //import 'package:flutter_webrtc/webrtc.dart';
 
 class ChatRoomPage extends StatefulWidget {
+  ChatRoomPage({
+    this.room,
+  });
+
+  final DocumentSnapshot room;
   @override
   _ChatRoomPageState createState() => _ChatRoomPageState();
 }
@@ -149,17 +154,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   List _questionSet;
   Widget _questionListView = Container(); //initialise with an empty container
 
-  void updateQuestionList(questionSet) {
-    setState(() {
-      print('callback questionSet: $questionSet');
-      _questionListView = QuestionListView(questionSet: questionSet);
-    });
-  }
-
   @override
   initState() {
+    print('widget.room[questions]: ${widget.room['questions']}');
+    _questionListView = QuestionListView(questionSet: widget.room['questions']);
     super.initState();
-    getQuestionSet(callback: updateQuestionList);
 //    initRenderers();
   }
 
@@ -212,73 +211,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           Expanded(
             flex: 5,
             child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Center(
-                          child: Text('Select a minimum of 4 questions',
-                              style: kP1LightGrey)),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: _outermargin),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              height: 20.0,
-                              child: RaisedButton(
-                                child: Text(
-                                  'Done',
-                                ),
-                                color: Colors.blueAccent,
-                                elevation: 5,
-                                onPressed: () {
-                                  setState(() {
-                                    //TODO make this pull in the correct name.
-                                    _questionListView =
-                                        Text('Waiting on Jeremiah');
-                                  });
-                                },
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                textColor: Colors.white,
-                              ),
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.greenAccent,
-                                  size: 25,
-                                ),
-                                Text(' 6 Selected'),
-                              ],
-                            ),
-                            //TODO update based on selected question count.
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 9,
-                    child: Container(child: _questionListView),
-                  ),
-                ],
+              child: QuestionListView(
+                questionSet: widget.room.data['questions'],
               ),
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: new FloatingActionButton(

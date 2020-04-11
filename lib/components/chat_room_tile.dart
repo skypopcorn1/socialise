@@ -97,7 +97,10 @@ class ChatRoomTile extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ChatRoomPage()),
+                      MaterialPageRoute(
+                          builder: (context) => ChatRoomPage(
+                                room: doc,
+                              )),
                     );
                   },
                 ),

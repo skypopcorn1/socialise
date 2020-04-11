@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:socialise/utilities/constants.dart';
 
 final Firestore _firestore = Firestore.instance;
 
-void getQuestionSet({Function callback}) async {
+Future<List> setRoomQuestions() async {
   List _questionSet = [];
   Map _queryResults = {
     'easy': [],
@@ -19,7 +20,7 @@ void getQuestionSet({Function callback}) async {
       .getDocuments();
 
   if (_fullQuestionSet.documents.isEmpty) {
-    return callback([]);
+    return [];
   } else {
     for (var question in _fullQuestionSet.documents) {
       _queryResults[question.data['type']].add(
@@ -49,7 +50,7 @@ void getQuestionSet({Function callback}) async {
       true
     ]);
 
-    return callback(_questionSet);
+    return _questionSet;
   }
 }
 
@@ -57,16 +58,25 @@ class QuestionListView extends StatefulWidget {
   QuestionListView({this.questionSet});
 
   final List questionSet;
+
   @override
   _QuestionListViewState createState() => _QuestionListViewState();
 }
 
 class _QuestionListViewState extends State<QuestionListView> {
   List _questionSet;
+  Map _questionSelected = {};
+  int questionCount;
+  bool questionCountError = false;
 
   @override
   void initState() {
     _questionSet = widget.questionSet;
+    questionCount = widget.questionSet.length;
+
+    for (int i = 0; i < _questionSet.length; i++) {
+      _questionSelected[_questionSet[i]] = false;
+    }
     super.initState();
   }
 
@@ -75,29 +85,131 @@ class _QuestionListViewState extends State<QuestionListView> {
     if (_questionSet == null) {
       return Container();
     } else {
-      return ListView.builder(
-          itemCount: _questionSet.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    offset: Offset(3, 3),
-                    blurRadius: 2.0,
-                    spreadRadius: 2.0,
-                  )
-                ],
-                color: Colors.white,
-              ),
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(
+              child: Center(
+                  child: Text('Must select a minimum of 4 questions',
+                      style:
+                          questionCountError ? kP1ErrorMessage : kP1LightGrey)),
+            ),
+          ),
+          Expanded(
+            flex: 15,
+            child: Container(
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(_questionSet[index][0]),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              height: 20.0,
+                              child: RaisedButton(
+                                child: Text(
+                                  'Done',
+                                ),
+                                color: Colors.blueAccent,
+                                elevation: 5,
+                                onPressed: () {
+                                  setState(() {
+                                    //TODO make this pull in the correct name.
+                                  });
+                                },
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                textColor: Colors.white,
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.greenAccent,
+                                  size: 25,
+                                ),
+                                Text('$questionCount Selected'),
+                              ],
+                            ),
+
+                            //TODO update based on selected question count.
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 9,
+                      child: Container(
+                        child: ListView.builder(
+                            itemCount: _questionSet.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              // question not selected by default.
+
+                              return GestureDetector(
+                                onTap: () {
+                                  print('pressed');
+                                  setState(() {
+                                    if (questionCount == 4 &&
+                                        !_questionSelected[
+                                            _questionSet[index]]) {
+                                      print('problem');
+                                      questionCountError = true;
+                                    } else {
+                                      questionCountError = false;
+                                      _questionSelected[_questionSet[index]] =
+                                          !_questionSelected[
+                                              _questionSet[index]];
+                                      _questionSelected[_questionSet[index]]
+                                          ? questionCount--
+                                          : questionCount++;
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        offset: Offset(3, 3),
+                                        blurRadius: 2.0,
+                                        spreadRadius: 2.0,
+                                      )
+                                    ],
+                                    color:
+                                        _questionSelected[_questionSet[index]]
+                                            ? Colors.purple[100]
+                                            : Colors.white,
+                                  ),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(18.0),
+                                    child: Text(_questionSet[index]),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          });
+            ),
+          ),
+        ],
+      );
     }
   }
 }
