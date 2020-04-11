@@ -19,19 +19,20 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
   bool publicRoom = false;
   String roomName;
   static bool testing = true;
+  int testRoomCounter = 1;
   Map roomDetails = testing
       ? {
-          'room': 'Test Room 2',
+          'room': 'Test Room 1',
           'activity': 'dating',
           'participants': 3,
-          'private': false,
+          'public': false,
           'code': 'no change',
         }
       : {
           'room': null,
           'activity': null,
           'participants': null,
-          'private': false,
+          'public': false,
           'code': null,
         };
 
@@ -216,6 +217,11 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
               margin: EdgeInsets.symmetric(vertical: 50),
               child: RaisedButton(
                 onPressed: () {
+                  testRoomCounter++;
+                  testing
+                      ? roomDetails['room'] = 'Test Room $testRoomCounter'
+                      : null;
+
                   List _errors = [];
                   roomDetails.forEach((k, v) {
                     if (v == null) {
@@ -230,7 +236,7 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                         'room': roomDetails['room'],
                         'activity': roomDetails['activity'],
                         'participants': roomDetails['participants'],
-                        'private': roomDetails['private'],
+                        'public': roomDetails['public'],
                         'code': code,
                       }).then((result) {
                         Navigator.push(

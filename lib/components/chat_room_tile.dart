@@ -1,11 +1,55 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:socialise/app/chat_room.dart';
 import 'package:socialise/utilities/constants.dart';
 
-class ChatRoomTile extends StatelessWidget {
-  ChatRoomTile({@required this.tileHeight, @required this.tileWidth});
+final Firestore _firestore = Firestore.instance;
 
+class ChatRoomListView extends StatelessWidget {
+  ChatRoomListView(
+      {@required this.tileHeight,
+      @required this.tileWidth,
+      @required this.public});
+
+  final bool public;
+  final double tileHeight;
+  final double tileWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('rooms')
+          .where('public', isEqualTo: public)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          print('no data');
+          return Text('No Rooms Available');
+        }
+
+        List<Widget> _roomTiles = [];
+        for (var doc in snapshot.data.documents) {
+          print('doc: ${doc.data}');
+          _roomTiles.add(
+            ChatRoomTile(
+              doc: doc,
+              tileHeight: tileHeight,
+              tileWidth: tileWidth,
+            ),
+          );
+        }
+        return ListView(children: _roomTiles);
+      },
+    );
+  }
+}
+
+class ChatRoomTile extends StatelessWidget {
+  ChatRoomTile({@required this.doc, this.tileHeight, this.tileWidth});
+
+  DocumentSnapshot doc;
   double tileHeight;
   double tileWidth;
 
@@ -19,7 +63,7 @@ class ChatRoomTile extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Text(
-                  'Jeremiah\'s Room',
+                  doc.data['room'],
                   style: kH3Bold,
                 ),
               ),
@@ -62,11 +106,18 @@ class ChatRoomTile extends StatelessWidget {
           ),
         ],
       ),
+      margin: EdgeInsets.all(10.0),
       height: tileHeight,
       width: tileWidth,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.0),
-        boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(3, 3))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black38,
+              offset: Offset(3, 3),
+              blurRadius: 6,
+              spreadRadius: 3)
+        ],
         color: Colors.white,
       ),
     );
