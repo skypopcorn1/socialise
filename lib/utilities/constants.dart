@@ -118,6 +118,11 @@ TextStyle kP1White = TextStyle(
   fontSize: 16.0,
 );
 
+const TextStyle kP1ErrorMessage = TextStyle(
+  color: Colors.red,
+  fontSize: 16.0,
+);
+
 TextStyle kP2LightGrey = TextStyle(
   color: Colors.grey[400],
   fontSize: 12.0,
