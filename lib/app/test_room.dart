@@ -24,7 +24,6 @@ class _ChatRoomTestPageState extends State<ChatRoomTestPage> {
   @override
   initState() {
     super.initState();
-    getQuestionSet(callback: updateQuestionList);
 //    initRenderers();
   }
 
