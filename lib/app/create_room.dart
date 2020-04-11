@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:socialise/components/school_of_life_bloc.dart';
 import 'package:socialise/utilities/constants.dart';
 import 'package:socialise/utilities/room_id_generator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -231,24 +232,38 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
                   });
                   if (_errors.isEmpty) {
                     //submit data to database
-                    generateRoomCode().then((code) {
-                      _firestore.collection('rooms').add({
-                        'room': roomDetails['room'],
-                        'activity': roomDetails['activity'],
-                        'participants': roomDetails['participants'],
-                        'public': roomDetails['public'],
-                        'code': code,
-                      }).then((result) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  RoomConfirmation(roomId: code)),
-                        );
-                        print('result: ${result.documentID}');
+
+                    void _createRoom(questions) {
+                      generateRoomCode().then((code) {
+                        _firestore.collection('rooms').add({
+                          'room': roomDetails['room'],
+                          'activity': roomDetails['activity'],
+                          'participants': roomDetails['participants'],
+                          'public': roomDetails['public'],
+                          'code': code,
+                          'questions': [
+                            'question1',
+                            'question2',
+                            'question3',
+                            'question4',
+                            'question5',
+                            'question6'
+                          ],
+                        }).then((result) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    RoomConfirmation(roomId: code)),
+                          );
+                          print('result: ${result.documentID}');
+                        });
                       });
-                    });
+                    }
+
+                    setRoomQuestions(callback: _createRoom);
                   }
+                  ;
                 },
                 child: Text('Create Room'),
                 color: kBlue,
